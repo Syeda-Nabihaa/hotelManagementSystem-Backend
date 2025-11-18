@@ -1,8 +1,10 @@
 import UserModel from "../Models/UserModel.mjs";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+
 export const signUp = async (req, res) => {
   try {
-    const { name, email, password, role , position } = req.body;
+    const { name, email, password, role, position } = req.body;
     const existingUser = await UserModel.findOne({ email: email });
     if (existingUser) {
       return res.status(400).json({ message: "User Allready exists" });
@@ -14,7 +16,7 @@ export const signUp = async (req, res) => {
       email: email,
       password: hashedPassword,
       role,
-      position
+      position,
     });
     return res.status(200).json({ registerUser });
   } catch (error) {
@@ -22,51 +24,32 @@ export const signUp = async (req, res) => {
   }
 };
 
+export const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const existingUser = await UserModel.findOne({ email: email });
+    if (!existingUser) {
+      res.status(404).json({ message: "No user found" });
+    }
+    const comparePassword = await bcrypt.compare(
+      password,
+      existingUser.password
+    );
+    if (!comparePassword) {
+      res.status(400).json({ message: "Invalid Credentials" });
+    }
+    const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET);
 
-
+    return res.status(200).json({ existingUser, token });
+  } catch (error) {
+     return res.status(500).json(error.message);
+  }
+};
 
 // import jwt from "jsonwebtoken";
 // import UserModel from "../model/UserModel.mjs";
 // import bcrypt from 'bcrypt'
 // // import validations from "../validation/validation.mjs";
-
-// const signup = async (req, res) => {
-//     // const { error } = validations.validateUser(req.body);
-
-//     // if (error) {
-//     //     return res.status(400).json({
-//     //         message: "Validation Error",
-//     //         details: error.details.map(err => err.message)
-//     //     });
-//     // }
-//     const { username, useremail, userpassword } = req.body;
-
-//     try {
-//         const existingUser = await UserModel.findOne({ email: useremail });
-//         if (existingUser) {
-//             return res.status(400).json({ message: "User already exists" });
-//         }
-
-//         const hashedPassword = await bcrypt.hash(userpassword, 10);
-
-//         const registerUser = await UserModel.create({
-//             username: username,
-//             email: useremail,
-//             password: hashedPassword
-//         });
-
-//         const token = jwt.sign(
-//             { id: registerUser._id },
-//             process.env.JWT_SECRET
-//         );
-
-//         return res.status(200).json({ registerUser, token });
-
-//     } catch (error) {
-//         console.log(error);
-//         return res.status(500).json({ message: "Internal Server Error", error });
-//     }
-// };
 
 // const login = async (req, res) => {
 
