@@ -1,0 +1,4 @@
+------ reservation and bookingg module confusion
+chatgpt give same code for both module
+. reservation  and booking module are same 
+. but in document - both have different modules 

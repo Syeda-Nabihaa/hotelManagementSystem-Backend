@@ -4,7 +4,7 @@ import RoomModel from "../Models/RoomModel.mjs";
 export const createBooking = async (req, res) => {
   try {
     const { guest, room, checkInDate, checkOutDate } = req.body;
-    if (!guest || !room || !checkInDate || !checkOutDate) {
+    if ( !room || !checkInDate || !checkOutDate) {
       return res.status(400).json({
         message: "All Fields are required",
       });
@@ -55,7 +55,7 @@ export const createBooking = async (req, res) => {
     const totalDays = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
     const totalAmount = totalDays * availableRoom.price;
         const booking = await BookingModel.create({
-      guest,
+      guest : req.user.id,
       room,
       checkInDate: checkIn,
       checkOutDate: checkOut,
@@ -63,9 +63,10 @@ export const createBooking = async (req, res) => {
       status: 'reserved'
     });
      availableRoom.status = "occupied";
-    await roomDoc.save();
+    await availableRoom.save();
      res.status(201).json({ message: "Booking created", booking });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+// 691dcd7fb24f7bf41e935b13
