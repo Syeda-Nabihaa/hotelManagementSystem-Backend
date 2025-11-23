@@ -7,7 +7,7 @@ import {
   getRoomById,
   updateRoom,
 } from "../Controllers/RoomController.mjs";
-import { createBooking } from "../Controllers/BookingController.mjs";
+import { cancelBooking, createBooking, getAllBookings } from "../Controllers/BookingController.mjs";
 import { auth } from "../middlewares/auth.mjs";
 import {
   createFeedback,
@@ -30,7 +30,9 @@ router
   .delete("/room/:id", auth, deleteRoom);
 
 //----------------- BOOKING ROUTES -------------------------------
-router.post("/createbooking", auth, createBooking);
+router.post("/createbooking", auth, createBooking)
+.get("/bookings", auth, getAllBookings)
+.delete("/cancelbooking/:id", auth , cancelBooking)
 
 //-----------FEEDBACKROUTES------------------------------
 

@@ -1,10 +1,11 @@
 import BookingModel from "../Models/BookingModel.mjs";
 import RoomModel from "../Models/RoomModel.mjs";
+import UserModel from "../Models/UserModel.mjs";
 
 export const createBooking = async (req, res) => {
   try {
     const { guest, room, checkInDate, checkOutDate } = req.body;
-    if ( !room || !checkInDate || !checkOutDate) {
+    if (!room || !checkInDate || !checkOutDate) {
       return res.status(400).json({
         message: "All Fields are required",
       });
@@ -54,19 +55,133 @@ export const createBooking = async (req, res) => {
     }
     const totalDays = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
     const totalAmount = totalDays * availableRoom.price;
-        const booking = await BookingModel.create({
-      guest : req.user.id,
+    const booking = await BookingModel.create({
+      guest: req.user.id,
       room,
       checkInDate: checkIn,
       checkOutDate: checkOut,
       totalAmount,
-      status: 'reserved'
+      status: "reserved",
     });
-     availableRoom.status = "occupied";
+    availableRoom.status = "occupied";
     await availableRoom.save();
-     res.status(201).json({ message: "Booking created", booking });
+    res.status(201).json({ message: "Booking created", booking });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
-// 691dcd7fb24f7bf41e935b13
+
+export const getAllBookings = async (req, res) => {
+  try {
+    const bookings = await BookingModel.find();
+    if (bookings.length === 0) {
+      return res.status(404).json({ message: "No bookings found" });
+    } else {
+      return res.status(200).json(bookings);
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export const cancelBooking = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const booking = await BookingModel.findById(id);
+    if (!booking) {
+      return res.status(404).json({ message: "No bookings found" });
+    }
+    if (booking.status === "checked-in") {
+      return res.status(400).json({
+        message: "Booking cannot be cancelled after check-in",
+      });
+    }
+
+    if (req.user.role === "guest") {
+      if (booking.guest.toString() !== req.user.id) {
+        return res.status(403).json({
+          message: "You can cancel only your own bookings",
+        });
+      }
+    }
+    booking.status = "cancelled";
+    await booking.save();
+
+    if (req.user.role === "admin") {
+      const user = await UserModel.findById(booking.guest);
+      console.log(`Notification sent to user: ${user.email}`);
+    }
+    res.status(200).json({
+      message: "Booking cancelled successfully",
+      booking,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// // Cancel Booking
+// export const cancelBooking = async (req, res) => {
+//   try {
+//     const { bookingId } = req.params;
+
+//     // Find booking
+//     const booking = await BookingModel.findById(bookingId);
+//     if (!booking) {
+//       return res.status(404).json({ message: "Booking not found" });
+//     }
+
+//     // Prevent cancellation after check-in
+//     if (booking.status === "checked-in") {
+//       return res.status(400).json({
+//         message: "Booking cannot be cancelled after check-in",
+//       });
+//     }
+
+//     // Prevent cancellation for past bookings
+//     const today = new Date();
+//     if (new Date(booking.checkInDate) <= today) {
+//       return res.status(400).json({
+//         message: "Past bookings cannot be cancelled",
+//       });
+//     }
+
+//     // USER can only cancel their own booking
+//     if (req.user.role === "guest") {
+//       if (booking.guest.toString() !== req.user.id) {
+//         return res.status(403).json({
+//           message: "You can cancel only your own bookings",
+//         });
+//       }
+//     }
+
+//     // Update booking status
+//     booking.status = "cancelled";
+//     await booking.save();
+
+//     // Make room available again
+//     const room = await RoomModel.findById(booking.room);
+//     if (room) {
+//       room.status = "available";
+//       await room.save();
+//     }
+
+//     // If ADMIN cancelled — notify user
+//     if (req.user.role === "admin") {
+//       const user = await UserModel.findById(booking.guest);
+
+//       console.log(`Notification sent to user: ${user.email}`);
+
+//       // If you want real email:
+//       // sendEmail(user.email, "Your booking has been cancelled", "…message…");
+//     }
+
+//     res.status(200).json({
+//       message: "Booking cancelled successfully",
+//       booking,
+//     });
+
+//   } catch (error) {
+//     res.status(500).json({ message: "Server error", error: error.message });
+//   }
+// };
