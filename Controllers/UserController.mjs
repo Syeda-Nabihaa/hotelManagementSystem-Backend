@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 
 export const signUp = async (req, res) => {
   try {
-    const { name, email, password, role, position } = req.body;
+    const { name, email, password, number, role, position } = req.body;
     const existingUser = await UserModel.findOne({ email: email });
     if (existingUser) {
       return res.status(400).json({ message: "User Allready exists" });
@@ -15,8 +15,9 @@ export const signUp = async (req, res) => {
       name: name,
       email: email,
       password: hashedPassword,
-      role,
+      role: role,
       position,
+      number,
     });
     return res.status(200).json({ registerUser });
   } catch (error) {
@@ -42,49 +43,39 @@ export const login = async (req, res) => {
 
     return res.status(200).json({ existingUser, token });
   } catch (error) {
-     return res.status(500).json(error.message);
+    return res.status(500).json(error.message);
   }
 };
 
-// import jwt from "jsonwebtoken";
-// import UserModel from "../model/UserModel.mjs";
-// import bcrypt from 'bcrypt'
-// // import validations from "../validation/validation.mjs";
+export const getAllUser = async (req, res) => {
+  try {
+    const users = await UserModel.find();
+    res.status(200).json(users);
+  } catch (error) {
+    return res.status(500).json(error.message);
+  }
+};
 
-// const login = async (req, res) => {
+export const getProfile = async (req, res) => {
+  try {
+    res.status(200).json(req.user);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-//     const { email, password } = req.body;
-//     try {
-//         const existingUser = await UserModel.findOne({ email: email });
-//         if (!existingUser) {
-//             return res.status(404).json({ message: "User not found" });
-//         }
 
-//         const comparePassword = await bcrypt.compare(
-//             password, existingUser.password
-//         )
-//         if (!comparePassword) {
-//             return res.status(400).json({ message: "Invalid Credentials" });
+export const getUserbyid = async (req, res) => {
+  try {
+    const id = req.params.id
+    const user = await UserModel.findById(id);
+    if(!user){
+      return res.status(404).json({message:"no user found"});
+    }
 
-//         }
-//         const token = jwt.sign(
-//             { id: existingUser._id },
-//             process.env.JWT_SECRET
-//         );
-
-//         return res.status(200).json({ existingUser, token });
-
-//     } catch (error) {
-//         console.log(error);
-//         return res.status(500).json({ message: "Internal Server Error", error });
-//     }
-
-// }
-
-// const UserController = {
-//     signup,
-//     login
-
-// }
-
-// export default UserController
+     return res.status(200).json(user);
+  } catch (error) {
+     res.status(500).json({ message: error.message });
+  }
+  
+}

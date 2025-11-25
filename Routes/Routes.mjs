@@ -1,5 +1,5 @@
 import express from "express";
-import { login, signUp } from "../Controllers/UserController.mjs";
+import { getAllUser, getProfile, getUserbyid, login, signUp } from "../Controllers/UserController.mjs";
 import {
   createRoom,
   deleteRoom,
@@ -7,19 +7,23 @@ import {
   getRoomById,
   updateRoom,
 } from "../Controllers/RoomController.mjs";
-import { cancelBooking, createBooking, getAllBookings } from "../Controllers/BookingController.mjs";
+import { cancelBooking, createBooking, getAllBookings, getBookingbyid } from "../Controllers/BookingController.mjs";
 import { auth } from "../middlewares/auth.mjs";
 import {
   createFeedback,
   deleteFeedback,
   getAllFeedback,
 } from "../Controllers/FeedbackController.mjs";
+import { verifyToken } from "../middlewares/verifyToken.mjs";
 
 const router = express.Router();
 
 //-------------------- USER ROUTES -----------------------------
 router.post("/signup", signUp);
 router.post("/login", login);
+router.get("/users", getAllUser);
+router.get("/user/:id", getUserbyid);
+router.get("/profile",verifyToken, getProfile);
 
 //------------------- ROOMS ROUTES -----------------------------
 router
@@ -32,6 +36,8 @@ router
 //----------------- BOOKING ROUTES -------------------------------
 router.post("/createbooking", auth, createBooking)
 .get("/bookings", auth, getAllBookings)
+.get("/booking/:id", auth, getBookingbyid)
+
 .delete("/cancelbooking/:id", auth , cancelBooking)
 
 //-----------FEEDBACKROUTES------------------------------
