@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllUser, getProfile, getUserbyid, login, signUp } from "../Controllers/UserController.mjs";
+import { getAllUser, getProfile, getUserbyid, login, signUp, updateUser } from "../Controllers/UserController.mjs";
 import {
   createRoom,
   deleteRoom,
@@ -24,6 +24,7 @@ router.post("/login", login);
 router.get("/users", getAllUser);
 router.get("/user/:id", getUserbyid);
 router.get("/profile",verifyToken, getProfile);
+router.put("/update",verifyToken, updateUser);
 
 //------------------- ROOMS ROUTES -----------------------------
 router
