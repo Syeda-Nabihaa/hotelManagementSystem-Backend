@@ -3,3 +3,6 @@ chatgpt give same code for both module
 . reservation  and booking module are same 
 . but in document - both have different modules 
 
+PORT=3000
+MONGO_URI=mongodb+srv://nabihafarhan1971:JtHhmt6DGiC@firstcluster.tai9yii.mongodb.net/hotelManagement
+JWT_SECRET=hotelManagementSystem
