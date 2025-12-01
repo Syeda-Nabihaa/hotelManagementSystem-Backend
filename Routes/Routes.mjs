@@ -15,6 +15,7 @@ import {
   getAllFeedback,
 } from "../Controllers/FeedbackController.mjs";
 import { verifyToken } from "../middlewares/verifyToken.mjs";
+import uploads from "../utils/upload.mjs";
 
 const router = express.Router();
 
@@ -28,7 +29,7 @@ router.put("/update",verifyToken, updateUser);
 
 //------------------- ROOMS ROUTES -----------------------------
 router
-  .post("/createroom", auth, createRoom)
+  .post("/createroom", auth, uploads.single("Image"), createRoom)
   .get("/rooms", getAllRooms)
   .get("/room/:id", getRoomById)
   .post("/room/:id", auth, updateRoom)

@@ -1,17 +1,30 @@
 import RoomModel from "../Models/RoomModel.mjs";
-
+import path from "path";
+import { fileURLToPath } from "url";
+import fs from "fs/promises";
+const getImageUrl = (req, filename) => {
+  return `${req.protocol}://${req.get("host")}/uploads/${filename}`;
+};
 export const createRoom = async (req, res) => {
   try {
     const { roomNumber, type, price, amenities } = req.body;
+    if (!roomNumber && !type && !price) {
+      if (req.file) {
+        await fs.unlink(path.join(__dirname, "../uploads", req.file.filename));
+      }
+      res.status(400).json({ message: "All fields are required" });
+    }
     const existingRoom = await RoomModel.findOne({ roomNumber });
     if (existingRoom) {
       res.status(400).json({ message: "Room Already Exists" });
     }
+    const ImageUrl = req.file ? getImageUrl(req, req.file.filename) : null;
     const newRoom = await RoomModel.create({
       roomNumber,
       type,
       price,
       amenities,
+      ImageUrl,
     });
     res
       .status(200)

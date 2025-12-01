@@ -11,6 +11,9 @@ const RoomSChema = new mongoose.Schema(
       default: "available",
     },
     amenities: [{ type: String }], // optional: ["AC", "TV", "WiFi"]
+    ImageUrl :{
+      type:String
+    }
   },
   { timestamps: true }
 );
