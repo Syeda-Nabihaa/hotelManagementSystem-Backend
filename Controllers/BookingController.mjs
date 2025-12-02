@@ -126,7 +126,7 @@ export const cancelBooking = async (req, res) => {
 export const getBookingbyid = async (req,res) => {
   try {
     const id = req.params.id;
-    const booking = await BookingModel.findById(id)
+    const booking = await BookingModel.findById(id).populate("room").sort({ createdAt: -1 })
     if(!booking){
       return res.status(404).json({message:"no booking found"})
     }
@@ -136,3 +136,7 @@ export const getBookingbyid = async (req,res) => {
   }
   
 }
+//  const bookings = await BookingModel
+//       .find({ guest: req.user.id })
+//       .populate("room")   // <-- this loads full room data
+//       .sort({ createdAt: -1 });

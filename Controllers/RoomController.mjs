@@ -7,30 +7,56 @@ const getImageUrl = (req, filename) => {
 };
 export const createRoom = async (req, res) => {
   try {
-    const { roomNumber, type, price, amenities } = req.body;
-    if (!roomNumber && !type && !price) {
-      if (req.file) {
-        await fs.unlink(path.join(__dirname, "../uploads", req.file.filename));
+    const { roomNumber, type, price, amenities, description, mealPlan , floor , maxGuests} = req.body;
+
+    // Validation
+    if (!roomNumber || !type || !price || !description) {
+      if (req.files && req.files.length > 0) {
+        req.files.forEach(file =>
+          fs.unlinkSync(path.join(__dirname, "../uploads", file.filename))
+        );
       }
-      res.status(400).json({ message: "All fields are required" });
+      return res.status(400).json({ message: "All fields are required" });
     }
+
     const existingRoom = await RoomModel.findOne({ roomNumber });
     if (existingRoom) {
-      res.status(400).json({ message: "Room Already Exists" });
+      return res.status(400).json({ message: "Room Already Exists" });
     }
-    const ImageUrl = req.file ? getImageUrl(req, req.file.filename) : null;
+
+    // Convert uploaded files to URLs
+    const ImageUrl = req.files
+      ? req.files.map(file => getImageUrl(req, file.filename))
+      : [];
+
+    // Meal plan descriptions
+    const mealDescriptions = {
+      room_only: "No meals included with the room booking.",
+      breakfast_only: "Complimentary breakfast included.",
+      half_board: "Breakfast and dinner included.",
+      full_board: "Complete 3-time meal: breakfast, lunch, and dinner included."
+    };
+
     const newRoom = await RoomModel.create({
       roomNumber,
+      floor,
+      maxGuests,
       type,
       price,
       amenities,
+      description,
       ImageUrl,
+      mealPlan: mealPlan || "room_only", // default if not provided
+      mealPlanDescription: mealDescriptions[mealPlan] || mealDescriptions["room_only"]
     });
-    res
-      .status(200)
-      .json({ message: "Room created successfully", data: newRoom });
+
+    return res.status(200).json({
+      message: "Room created successfully",
+      data: newRoom
+    });
+
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    return res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
@@ -56,20 +82,26 @@ export const getRoomById = async (req, res) => {
 export const updateRoom = async (req, res) => {
   try {
     const updates = req.body;
-    const updateRoom = await RoomModel.findByIdAndUpdate(
+
+    const updatedRoom = await RoomModel.findByIdAndUpdate(
       req.params.id,
       updates,
       { new: true }
     );
-    if (!updateRoom) {
-      res
-        .status(200)
-        .json({ message: "Room updated successfully", room: updateRoom });
+
+    if (!updatedRoom) {
+      return res.status(404).json({ message: "Room not found" });
     }
+
+    return res.status(200).json({
+      message: "Room updated successfully",
+      room: updatedRoom
+    });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    return res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
 
 export const deleteRoom = async (req, res) => {
   try {

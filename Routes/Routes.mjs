@@ -29,10 +29,10 @@ router.put("/update",verifyToken, updateUser);
 
 //------------------- ROOMS ROUTES -----------------------------
 router
-  .post("/createroom", auth, uploads.single("Image"), createRoom)
+  .post("/createroom", auth, uploads.array("ImageUrl"), createRoom)
   .get("/rooms", getAllRooms)
   .get("/room/:id", getRoomById)
-  .post("/room/:id", auth, updateRoom)
+  .put("/room/:id", auth,uploads.array("ImageUrl"), updateRoom)
   .delete("/room/:id", auth, deleteRoom);
 
 //----------------- BOOKING ROUTES -------------------------------
