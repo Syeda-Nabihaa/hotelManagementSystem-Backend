@@ -81,24 +81,34 @@ export const getRoomById = async (req, res) => {
 
 export const updateRoom = async (req, res) => {
   try {
-    const updates = req.body;
+    const room = await RoomModel.findById(req.params.id);
 
-    const updatedRoom = await RoomModel.findByIdAndUpdate(
-      req.params.id,
-      updates,
-      { new: true }
-    );
-
-    if (!updatedRoom) {
+    if (!room) {
       return res.status(404).json({ message: "Room not found" });
+    } 
+
+    // Update normal fields
+    Object.assign(room, req.body);
+
+    // If new images uploaded
+    if (req.files && req.files.length > 0) {
+      const newImages = req.files.map((file) => getImageUrl(req, file.filename));
+
+      // ▶ MERGE (keep old + add new)
+      room.ImageUrl = [...room.ImageUrl, ...newImages];
     }
+
+    await room.save();
 
     return res.status(200).json({
       message: "Room updated successfully",
-      room: updatedRoom
+      room,
     });
   } catch (error) {
-    return res.status(500).json({ message: "Server error", error: error.message });
+    return res.status(500).json({
+      message: "Server error",
+      error: error.message,
+    });
   }
 };
 
