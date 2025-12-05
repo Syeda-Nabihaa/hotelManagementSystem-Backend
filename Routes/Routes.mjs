@@ -7,7 +7,7 @@ import {
   getRoomById,
   updateRoom,
 } from "../Controllers/RoomController.mjs";
-import { cancelBooking, createBooking, getAllBookings, getBookingbyid } from "../Controllers/BookingController.mjs";
+import { cancelBooking, createBooking, getAllBookings, getAllUserBookings, getBookingbyid } from "../Controllers/BookingController.mjs";
 import { auth } from "../middlewares/auth.mjs";
 import {
   createFeedback,
@@ -37,7 +37,8 @@ router
 
 //----------------- BOOKING ROUTES -------------------------------
 router.post("/createbooking", auth, createBooking)
-.get("/bookings", auth, getAllBookings)
+.get("/userbooking", auth, getAllUserBookings)
+.get("/bookings",  getAllBookings)
 .get("/booking/:id", auth, getBookingbyid)
 
 .delete("/cancelbooking/:id", auth , cancelBooking)

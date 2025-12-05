@@ -71,9 +71,9 @@ export const createBooking = async (req, res) => {
   }
 };
 
-export const getAllBookings = async (req, res) => {
+export const getAllUserBookings = async (req, res) => {
   try {
-     const bookings = await BookingModel
+    const bookings = await BookingModel
       .find({ guest: req.user.id })
       .populate("room")   // <-- this loads full room data
       .sort({ createdAt: -1 });
@@ -86,7 +86,18 @@ export const getAllBookings = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
-
+export const getAllBookings = async (req, res) => {
+  try {
+    const bookings = await BookingModel.find().populate("room").populate("guest").sort({ createdAt: -1 });
+    if (bookings.length === 0) {
+      return res.status(404).json({ message: "No bookings found" });
+    } else {
+      return res.status(200).json(bookings);
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
 export const cancelBooking = async (req, res) => {
   try {
     const id = req.params.id;
@@ -123,18 +134,18 @@ export const cancelBooking = async (req, res) => {
   }
 };
 
-export const getBookingbyid = async (req,res) => {
+export const getBookingbyid = async (req, res) => {
   try {
     const id = req.params.id;
-    const booking = await BookingModel.findById(id).populate("room").sort({ createdAt: -1 })
-    if(!booking){
-      return res.status(404).json({message:"no booking found"})
+    const booking = await BookingModel.findById(id).populate("room").populate("guest").sort({ createdAt: -1 })
+    if (!booking) {
+      return res.status(404).json({ message: "no booking found" })
     }
     return res.status(200).json(booking)
   } catch (error) {
-     res.status(500).json({ message: "Server error", error: error.message });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
-  
+
 }
 //  const bookings = await BookingModel
 //       .find({ guest: req.user.id })
