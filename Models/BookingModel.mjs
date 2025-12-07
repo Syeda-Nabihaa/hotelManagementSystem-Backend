@@ -7,6 +7,10 @@ const bookingSchema = new Schema({
   checkOutDate: { type: Date, required: true },
   status: { type: String, enum: ["reserved", "checked-in", "checked-out", "cancelled"], default: "reserved" },
   totalAmount: { type: Number, required: true },
+   cancellationReason: {
+    type: String,
+    default: null,
+  },
 }, { timestamps: true });
 
 export default model("booking", bookingSchema);

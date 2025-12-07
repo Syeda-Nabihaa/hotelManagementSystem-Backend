@@ -22,7 +22,7 @@ const router = express.Router();
 //-------------------- USER ROUTES -----------------------------
 router.post("/signup", signUp);
 router.post("/login", login);
-router.get("/users", getAllUser);
+router.get("/users", auth,  getAllUser);
 router.get("/user/:id", getUserbyid);
 router.get("/profile",verifyToken, getProfile);
 router.put("/update",verifyToken, updateUser);

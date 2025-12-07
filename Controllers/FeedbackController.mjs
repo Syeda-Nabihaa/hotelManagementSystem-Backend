@@ -31,7 +31,7 @@ export const createFeedback = async (req, res) => {
 
 export const getAllFeedback = async (req, res) => {
   try {
-    const feedback = await FeedbackModel.find();
+    const feedback = await FeedbackModel.find().populate("guest");
     if (feedback.length === 0) {
       return res.status(404).json({ message: "No feedback found" });
     } else {
