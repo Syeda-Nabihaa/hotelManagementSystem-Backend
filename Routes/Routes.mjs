@@ -1,5 +1,12 @@
-import express from "express";
-import { getAllUser, getProfile, getUserbyid, login, signUp, updateUser } from "../Controllers/UserController.mjs";
+import express, { Router } from "express";
+import {
+  getAllUser,
+  getProfile,
+  getUserbyid,
+  login,
+  signUp,
+  updateUser,
+} from "../Controllers/UserController.mjs";
 import {
   createRoom,
   deleteRoom,
@@ -7,7 +14,13 @@ import {
   getRoomById,
   updateRoom,
 } from "../Controllers/RoomController.mjs";
-import { cancelBooking, createBooking, getAllBookings, getAllUserBookings, getBookingbyid } from "../Controllers/BookingController.mjs";
+import {
+  cancelBooking,
+  createBooking,
+  getAllBookings,
+  getAllUserBookings,
+  getBookingbyid,
+} from "../Controllers/BookingController.mjs";
 import { auth } from "../middlewares/auth.mjs";
 import {
   createFeedback,
@@ -16,37 +29,51 @@ import {
 } from "../Controllers/FeedbackController.mjs";
 import { verifyToken } from "../middlewares/verifyToken.mjs";
 import uploads from "../utils/upload.mjs";
+import {
+  ContactInfo,
+  getAllInfo,
+  getInfoById,
+  updateInfo,
+} from "../Controllers/ContactController.mjs";
 
 const router = express.Router();
 
 //-------------------- USER ROUTES -----------------------------
 router.post("/signup", signUp);
 router.post("/login", login);
-router.get("/users", auth,  getAllUser);
+router.get("/users", auth, getAllUser);
 router.get("/user/:id", getUserbyid);
-router.get("/profile",verifyToken, getProfile);
-router.put("/update",verifyToken, updateUser);
+router.get("/profile", verifyToken, getProfile);
+router.put("/update", verifyToken, updateUser);
 
 //------------------- ROOMS ROUTES -----------------------------
 router
   .post("/createroom", auth, uploads.array("ImageUrl"), createRoom)
   .get("/rooms", getAllRooms)
   .get("/room/:id", getRoomById)
-  .put("/room/:id", auth,uploads.array("ImageUrl"), updateRoom)
+  .put("/room/:id", auth, uploads.array("ImageUrl"), updateRoom)
   .delete("/room/:id", auth, deleteRoom);
 
 //----------------- BOOKING ROUTES -------------------------------
-router.post("/createbooking", auth, createBooking)
-.get("/userbooking", auth, getAllUserBookings)
-.get("/bookings",  getAllBookings)
-.get("/booking/:id", auth, getBookingbyid)
+router
+  .post("/createbooking", auth, createBooking)
+  .get("/userbooking", auth, getAllUserBookings)
+  .get("/bookings", getAllBookings)
+  .get("/booking/:id", auth, getBookingbyid)
 
-.delete("/cancelbooking/:id", auth , cancelBooking)
+  .delete("/cancelbooking/:id", auth, cancelBooking);
 
 //-----------FEEDBACKROUTES------------------------------
 
 router
   .post("/createfeedback", auth, createFeedback)
   .get("/feedbacks", getAllFeedback)
-  .delete("/feedback/:id", deleteFeedback)
+  .delete("/feedback/:id", deleteFeedback);
+
+// ----------------------- CONTACT ROUTES ---------------------------------
+router
+  .post("/addinfo", ContactInfo)
+  .get("/info", getAllInfo)
+  .get("/info/:id", getInfoById)
+  .put("/info/:id", updateInfo);
 export default router;
