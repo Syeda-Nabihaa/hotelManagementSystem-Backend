@@ -40,7 +40,11 @@ export const login = async (req, res) => {
     if (!comparePassword) {
       res.status(400).json({ message: "Invalid Credentials" });
     }
-    const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET);
+    const token = jwt.sign(
+      { id: existingUser._id, role: existingUser.role },
+      process.env.JWT_SECRET, 
+      { expiresIn: "1d" }
+    );
 
     return res.status(200).json({ existingUser, token });
   } catch (error) {
@@ -81,7 +85,7 @@ export const getUserbyid = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   try {
-    const userId = req.user.id; 
+    const userId = req.user.id;
     const { name, password, number, position, city } = req.body;
 
     // Fetch full Mongoose document
@@ -100,7 +104,7 @@ export const updateUser = async (req, res) => {
       user.password = hashedPassword;
     }
 
-const updatedUser = await user.save({ validateBeforeSave: false });
+    const updatedUser = await user.save({ validateBeforeSave: false });
 
     return res.status(200).json({
       message: "User updated successfully",
@@ -110,4 +114,3 @@ const updatedUser = await user.save({ validateBeforeSave: false });
     res.status(500).json({ message: error.message });
   }
 };
-

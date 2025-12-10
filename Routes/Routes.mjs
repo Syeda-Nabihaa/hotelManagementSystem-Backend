@@ -16,6 +16,7 @@ import {
 } from "../Controllers/RoomController.mjs";
 import {
   cancelBooking,
+  confirmBooking,
   createBooking,
   getAllBookings,
   getAllUserBookings,
@@ -57,6 +58,7 @@ router
 //----------------- BOOKING ROUTES -------------------------------
 router
   .post("/createbooking", auth, createBooking)
+  .put("/confirmbooking/:id", auth, confirmBooking)
   .get("/userbooking", auth, getAllUserBookings)
   .get("/bookings", getAllBookings)
   .get("/booking/:id", auth, getBookingbyid)
