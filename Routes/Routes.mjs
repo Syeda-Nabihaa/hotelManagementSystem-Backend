@@ -36,6 +36,7 @@ import {
   getInfoById,
   updateInfo,
 } from "../Controllers/ContactController.mjs";
+import { AboutInfo, getAllContent } from "../Controllers/AboutController.mjs";
 
 const router = express.Router();
 
@@ -78,4 +79,10 @@ router
   .get("/info", getAllInfo)
   .get("/info/:id", getInfoById)
   .put("/info/:id", updateInfo);
+
+  //---------------------ABOUT ROUTES ---------------------------------------
+  router
+  .post("/add", AboutInfo)
+  .get("/allcontent", getAllContent)
+ 
 export default router;

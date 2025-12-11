@@ -8,7 +8,7 @@ export const ContactInfo = async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    const information = ContactModel.create({
+    const information = await ContactModel.create({
       title,
       description,
       value,
@@ -58,7 +58,7 @@ export const updateInfo = async (req, res) => {
     if (!updateinfo) {
       return res.status(404).json({ message: "Info not found" });
     }
-    res.status(200).json({ message: "Workout Updated", updateinfo });
+    res.status(200).json({ message: "Info Updated", updateinfo });
   } catch (error) {
     res.status(500).json(error.message);
   }
