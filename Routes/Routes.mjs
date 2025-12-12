@@ -37,6 +37,7 @@ import {
   updateInfo,
 } from "../Controllers/ContactController.mjs";
 import { AboutInfo, getAllContent } from "../Controllers/AboutController.mjs";
+import { getAllImages, uploadImages } from "../Controllers/GalleryController.mjs";
 
 const router = express.Router();
 
@@ -84,5 +85,10 @@ router
   router
   .post("/add", AboutInfo)
   .get("/allcontent", getAllContent)
- 
+
+
+  //----------------GALLERY ROUTES ------------------------------------
+ router
+  .post("/upload", uploads.single("ImageUrl"), uploadImages)
+  .get("/gallery" , getAllImages)
 export default router;

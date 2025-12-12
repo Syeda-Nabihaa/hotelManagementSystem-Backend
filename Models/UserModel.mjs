@@ -9,16 +9,11 @@ const UserSchema = new mongoose.Schema(
     city: { type: String },
     role: {
       type: String,
-      enum: ["admin", "staff", "guest"],
-      required: true,
+      enum: ["admin", "guest"],
+      default:"guest"
+
     },
-    position: {
-      type: String,
-      enum: ["manager", "receptionist", "housekeeping"],
-      required: function () {
-        return this.role === "staff";
-      },
-    },
+   
   },
   { timestamps: true }
 );
