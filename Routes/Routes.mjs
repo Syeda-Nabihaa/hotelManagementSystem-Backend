@@ -37,7 +37,14 @@ import {
   updateInfo,
 } from "../Controllers/ContactController.mjs";
 import { AboutInfo, getAllContent } from "../Controllers/AboutController.mjs";
-import { getAllImages, uploadImages } from "../Controllers/GalleryController.mjs";
+import {
+  getAllImages,
+  uploadImages,
+} from "../Controllers/GalleryController.mjs";
+import {
+  createContactUs,
+  getAllContactUs,
+} from "../Controllers/ContactUsController.mjs";
 
 const router = express.Router();
 
@@ -48,6 +55,8 @@ router.get("/users", auth, getAllUser);
 router.get("/user/:id", getUserbyid);
 router.get("/profile", verifyToken, getProfile);
 router.put("/update", verifyToken, updateUser);
+router.post("/contact", createContactUs);
+router.get("/contact", getAllContactUs);
 
 //------------------- ROOMS ROUTES -----------------------------
 router
@@ -81,14 +90,11 @@ router
   .get("/info/:id", getInfoById)
   .put("/info/:id", updateInfo);
 
-  //---------------------ABOUT ROUTES ---------------------------------------
-  router
-  .post("/add", AboutInfo)
-  .get("/allcontent", getAllContent)
+//---------------------ABOUT ROUTES ---------------------------------------
+router.post("/add", AboutInfo).get("/allcontent", getAllContent);
 
-
-  //----------------GALLERY ROUTES ------------------------------------
- router
+//----------------GALLERY ROUTES ------------------------------------
+router
   .post("/upload", uploads.single("ImageUrl"), uploadImages)
-  .get("/gallery" , getAllImages)
+  .get("/gallery", getAllImages);
 export default router;
