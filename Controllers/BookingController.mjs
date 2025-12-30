@@ -62,7 +62,7 @@ export const createBooking = async (req, res) => {
       totalAmount,
       status: "pending",
     });
-    availableRoom.status = "occupied";
+    availableRoom.status = "reserved";
     await availableRoom.save();
     res.status(201).json({ message: "Booking created", booking });
   } catch (error) {
