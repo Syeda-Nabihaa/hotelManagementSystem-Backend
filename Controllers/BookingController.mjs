@@ -265,7 +265,7 @@ export const confirmBooking = async (req, res) => {
 
  await sendEmail(
       user.email,
-      "Your Booking Has Been Cancelled",
+      "Your Booking Has Been confirmed",
       emailHTML
     );
 
